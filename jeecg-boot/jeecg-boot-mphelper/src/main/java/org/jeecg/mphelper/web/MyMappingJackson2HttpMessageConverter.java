@@ -69,7 +69,7 @@ public class MyMappingJackson2HttpMessageConverter extends MappingJackson2HttpMe
         Object o = null;
         Class clz = (Class) type;
         if (clz.getAnnotation(MpEntity.class) != null) {
-            Map<String, Field> fieldMap = FieldUtil.getAllFieldMap(clz);
+            Map<String, Field> fieldMap = FieldUtil.getFieldMap(clz, true, false);
 
             Map map = this.objectMapper.readValue(inputMessage.getBody(), Map.class);
             Map newMap = new LinkedHashMap(map.size());
@@ -130,7 +130,7 @@ public class MyMappingJackson2HttpMessageConverter extends MappingJackson2HttpMe
             // 转换字段后放入新map中
             Map map = BeanUtil.beanToMap(o); // 也是 LinkedHashMap
             Map newMap = new LinkedHashMap(map.size());
-            Map<String, Field> fieldMap = FieldUtil.getAllFieldMap(clz);
+            Map<String, Field> fieldMap = FieldUtil.getFieldMap(clz, true, false);
             StandardEvaluationContext context = new StandardEvaluationContext();
             context.setRootObject(map);
             fieldMap.forEach((k, field) -> {
