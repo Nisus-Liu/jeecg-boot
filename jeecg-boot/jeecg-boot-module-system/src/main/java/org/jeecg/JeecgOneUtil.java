@@ -43,10 +43,11 @@ public class JeecgOneUtil {
 
 
     public static void main(String[] args) {
-        // 批量生成多个表格diamante
-        String tableNames[] = {"feed_store", "feed_share", "feed_reply", "feed_like", "feed_favorite"};
+        // =================================================================
+        // 批量生成多个表格名定义
+        String tableNames[] = {"feed_store"};
         String moduleName = "feed"; // 模块名
-
+        // =================================================================
 
 
         for (String tn : tableNames) {

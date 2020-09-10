@@ -62,12 +62,12 @@ public class CodeGenerateOneToMany extends a implements IGenerate {
             DbReadTableUtil var10001;
             if (this.g == null || this.g.size() == 0) {
                 var10001 = j;
-                this.g = DbReadTableUtil.a(this.f.getTableName());
+                this.g = DbReadTableUtil.getColumns(this.f.getTableName());
             }
 
             if (this.h == null || this.h.size() == 0) {
                 var10001 = j;
-                this.h = DbReadTableUtil.b(this.f.getTableName());
+                this.h = DbReadTableUtil.getOriginalColumns(this.f.getTableName());
             }
 
             var1.put("columns", this.g);
@@ -89,13 +89,13 @@ public class CodeGenerateOneToMany extends a implements IGenerate {
                 DbReadTableUtil var10000;
                 if (var12.getColums() == null || var12.getColums().size() == 0) {
                     var10000 = j;
-                    var4 = DbReadTableUtil.a(var12.getTableName());
+                    var4 = DbReadTableUtil.getColumns(var12.getTableName());
                     var12.setColums(var4);
                 }
 
                 if (var12.getOriginalColumns() == null || var12.getOriginalColumns().size() == 0) {
                     var10000 = j;
-                    var4 = DbReadTableUtil.b(var12.getTableName());
+                    var4 = DbReadTableUtil.getOriginalColumns(var12.getTableName());
                     var12.setOriginalColumns(var4);
                 }
 

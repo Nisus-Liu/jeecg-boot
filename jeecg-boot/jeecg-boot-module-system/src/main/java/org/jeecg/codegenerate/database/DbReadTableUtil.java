@@ -1,6 +1,5 @@
 package org.jeecg.codegenerate.database;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.codegenerate.config.AppConfig;
 import org.jeecg.codegenerate.generate.pojo.ColumnVo;
@@ -8,11 +7,9 @@ import org.jeecg.codegenerate.generate.util.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.PrintStream;
 import java.sql.*;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class DbReadTableUtil {
@@ -23,23 +20,23 @@ public class DbReadTableUtil {
     public DbReadTableUtil() {
     }
 
-    public static void main(String[] args) throws SQLException {
-        try {
-            List var1 = a("demo");
-            Iterator var2 = var1.iterator();
-
-            while(var2.hasNext()) {
-                ColumnVo var3 = (ColumnVo)var2.next();
-                System.out.println(var3.getFieldName());
-            }
-        } catch (Exception var4) {
-            var4.printStackTrace();
-        }
-
-        PrintStream var10000 = System.out;
-        new DbReadTableUtil();
-        var10000.println(ArrayUtils.toString(a()));
-    }
+    // public static void main(String[] args) throws SQLException {
+    //     try {
+    //         List var1 = getColumns("demo");
+    //         Iterator var2 = var1.iterator();
+    //
+    //         while(var2.hasNext()) {
+    //             ColumnVo var3 = (ColumnVo)var2.next();
+    //             System.out.println(var3.getFieldName());
+    //         }
+    //     } catch (Exception var4) {
+    //         var4.printStackTrace();
+    //     }
+    //
+    //     PrintStream var10000 = System.out;
+    //     new DbReadTableUtil();
+    //     var10000.println(ArrayUtils.toString(getTableNames()));
+    // }
 
     public static Statement getStatement() {
         if (STATEMENT==null) {
@@ -55,27 +52,27 @@ public class DbReadTableUtil {
         return STATEMENT;
     }
 
-    public static List<String> a() throws SQLException {
+    public static List<String> getTableNames() throws SQLException {
         String var1 = null;
         ArrayList var2 = new ArrayList(0);
 
         try {
-            Class.forName(org.jeecg.codegenerate.config.AppConfig.DRIVER_NAME);
-            CONNECTION = DriverManager.getConnection(org.jeecg.codegenerate.config.AppConfig.URL, org.jeecg.codegenerate.config.AppConfig.USERNAME, org.jeecg.codegenerate.config.AppConfig.PASSWORD);
+            Class.forName(AppConfig.DRIVER_NAME);
+            CONNECTION = DriverManager.getConnection(AppConfig.URL, AppConfig.USERNAME, AppConfig.PASSWORD);
             STATEMENT = CONNECTION.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("mysql")) {
-                var1 = MessageFormat.format("select distinct table_name from information_schema.columns where table_schema = {0}", StrUtil.wrapWithSingleQuote(org.jeecg.codegenerate.config.AppConfig.DATABASE_NAME));
+            if (AppConfig.DB_TYPE.equals("mysql")) {
+                var1 = MessageFormat.format("select distinct table_name from information_schema.columns where table_schema = {0}", StrUtil.wrapWithSingleQuote(AppConfig.DATABASE_NAME));
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("oracle")) {
+            if (AppConfig.DB_TYPE.equals("oracle")) {
                 var1 = " select distinct colstable.table_name as  table_name from user_tab_cols colstable order by colstable.table_name";
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("postgresql")) {
+            if (AppConfig.DB_TYPE.equals("postgresql")) {
                 var1 = "SELECT distinct c.relname AS  table_name FROM pg_class c";
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("sqlserver")) {
+            if (AppConfig.DB_TYPE.equals("sqlserver")) {
                 var1 = "select distinct c.name as  table_name from sys.objects c where c.type = 'U' ";
             }
 
@@ -109,28 +106,28 @@ public class DbReadTableUtil {
         return var2;
     }
 
-    public static List<ColumnVo> a(String var0) throws Exception {
+    public static List<ColumnVo> getColumns(String var0) throws Exception {
         String var2 = null;
         ArrayList var3 = new ArrayList();
 
         ColumnVo var6;
         try {
-            Class.forName(org.jeecg.codegenerate.config.AppConfig.DRIVER_NAME);
-            CONNECTION = DriverManager.getConnection(org.jeecg.codegenerate.config.AppConfig.URL, org.jeecg.codegenerate.config.AppConfig.USERNAME, org.jeecg.codegenerate.config.AppConfig.PASSWORD);
+            Class.forName(AppConfig.DRIVER_NAME);
+            CONNECTION = DriverManager.getConnection(AppConfig.URL, AppConfig.USERNAME, AppConfig.PASSWORD);
             STATEMENT = CONNECTION.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("mysql")) {
-                var2 = MessageFormat.format("select column_name,data_type,column_comment,numeric_precision,numeric_scale,character_maximum_length,is_nullable nullable from information_schema.columns where table_name = {0} and table_schema = {1}", StrUtil.wrapWithSingleQuote(var0.toUpperCase()), StrUtil.wrapWithSingleQuote(org.jeecg.codegenerate.config.AppConfig.DATABASE_NAME));
+            if (AppConfig.DB_TYPE.equals("mysql")) {
+                var2 = MessageFormat.format("select column_name,data_type,column_comment,numeric_precision,numeric_scale,character_maximum_length,is_nullable nullable from information_schema.columns where table_name = {0} and table_schema = {1}", StrUtil.wrapWithSingleQuote(var0.toUpperCase()), StrUtil.wrapWithSingleQuote(AppConfig.DATABASE_NAME));
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("oracle")) {
+            if (AppConfig.DB_TYPE.equals("oracle")) {
                 var2 = MessageFormat.format(" select colstable.column_name column_name, colstable.data_type data_type, commentstable.comments column_comment, colstable.Data_Precision column_precision, colstable.Data_Scale column_scale,colstable.Char_Length,colstable.nullable from user_tab_cols colstable  inner join user_col_comments commentstable  on colstable.column_name = commentstable.column_name  where colstable.table_name = commentstable.table_name  and colstable.table_name = {0}", StrUtil.wrapWithSingleQuote(var0.toUpperCase()));
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("postgresql")) {
+            if (AppConfig.DB_TYPE.equals("postgresql")) {
                 var2 = MessageFormat.format("SELECT a.attname AS  field,t.typname AS type,col_description(a.attrelid,a.attnum) as comment,null as column_precision,null as column_scale,null as Char_Length,a.attnotnull  FROM pg_class c,pg_attribute  a,pg_type t  WHERE c.relname = {0} and a.attnum > 0  and a.attrelid = c.oid and a.atttypid = t.oid  ORDER BY a.attnum ", StrUtil.wrapWithSingleQuote(var0.toLowerCase()));
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("sqlserver")) {
+            if (AppConfig.DB_TYPE.equals("sqlserver")) {
                 var2 = MessageFormat.format("select distinct cast(a.name as varchar(50)) column_name,  cast(b.name as varchar(50)) data_type,  cast(e.value as varchar(200)) comment,  cast(ColumnProperty(a.object_id,a.Name,'''Precision''') as int) num_precision,  cast(ColumnProperty(a.object_id,a.Name,'''Scale''') as int) num_scale,  a.max_length,  (case when a.is_nullable=1 then '''y''' else '''n''' end) nullable,column_id   from sys.columns a left join sys.types b on a.user_type_id=b.user_type_id left join (select top 1 * from sys.objects where type = '''U''' and name ={0}  order by name) c on a.object_id=c.object_id left join sys.extended_properties e on e.major_id=c.object_id and e.minor_id=a.column_id and e.class=1 where c.name={0} order by a.column_id", StrUtil.wrapWithSingleQuote(var0.toLowerCase()));
             }
 
@@ -142,7 +139,7 @@ public class DbReadTableUtil {
             }
 
             var6 = new ColumnVo();
-            if (org.jeecg.codegenerate.config.AppConfig.l) {
+            if (AppConfig.l) {
                 var6.setFieldName(e(var1.getString(1).toLowerCase()));
             } else {
                 var6.setFieldName(var1.getString(1).toLowerCase());
@@ -155,21 +152,21 @@ public class DbReadTableUtil {
             var6.setScale(var1.getString(5));
             var6.setCharmaxLength(var1.getString(6));
             var6.setNullable(StrUtil.normalizeBoolFlag(var1.getString(7)));
-            a(var6);
+            setClassTypeAndOptionType(var6);
             var6.setFiledComment(StringUtils.isBlank(var1.getString(3)) ? var6.getFieldName() : var1.getString(3));
             LOGGER.debug("columnt.getFieldName() -------------" + var6.getFieldName());
             String[] var7 = new String[0];
-            if (org.jeecg.codegenerate.config.AppConfig.p != null) {
-                var7 = org.jeecg.codegenerate.config.AppConfig.p.toLowerCase().split(",");
+            if (AppConfig.p != null) {
+                var7 = AppConfig.p.toLowerCase().split(",");
             }
 
-            if (!org.jeecg.codegenerate.config.AppConfig.m.equals(var6.getFieldName()) && !org.jeecg.codegenerate.database.util.a.a(var6.getFieldDbName().toLowerCase(), var7)) {
+            if (!AppConfig.m.equals(var6.getFieldName()) && !org.jeecg.codegenerate.database.util.a.a(var6.getFieldDbName().toLowerCase(), var7)) {
                 var3.add(var6);
             }
 
             while(var1.previous()) {
                 ColumnVo var8 = new ColumnVo();
-                if (org.jeecg.codegenerate.config.AppConfig.l) {
+                if (AppConfig.l) {
                     var8.setFieldName(e(var1.getString(1).toLowerCase()));
                 } else {
                     var8.setFieldName(var1.getString(1).toLowerCase());
@@ -177,7 +174,7 @@ public class DbReadTableUtil {
 
                 var8.setFieldDbName(var1.getString(1).toUpperCase());
                 LOGGER.debug("columnt.getFieldName() -------------" + var8.getFieldName());
-                if (!org.jeecg.codegenerate.config.AppConfig.m.equals(var8.getFieldName()) && !org.jeecg.codegenerate.database.util.a.a(var8.getFieldDbName().toLowerCase(), var7)) {
+                if (!AppConfig.m.equals(var8.getFieldName()) && !org.jeecg.codegenerate.database.util.a.a(var8.getFieldDbName().toLowerCase(), var7)) {
                     var8.setFieldType(e(var1.getString(2).toLowerCase()));
                     var8.setFieldDbType(e(var1.getString(2).toLowerCase()));
                     LOGGER.debug("-----po.setFieldType------------" + var8.getFieldType());
@@ -185,7 +182,7 @@ public class DbReadTableUtil {
                     var8.setScale(var1.getString(5));
                     var8.setCharmaxLength(var1.getString(6));
                     var8.setNullable(StrUtil.normalizeBoolFlag(var1.getString(7)));
-                    a(var8);
+                    setClassTypeAndOptionType(var8);
                     var8.setFiledComment(StringUtils.isBlank(var1.getString(3)) ? var8.getFieldName() : var1.getString(3));
                     var3.add(var8);
                 }
@@ -225,30 +222,30 @@ public class DbReadTableUtil {
         return var20;
     }
 
-    public static List<ColumnVo> b(String var0) throws Exception {
+    public static List<ColumnVo> getOriginalColumns(String tableName) throws Exception {
         ResultSet var1 = null;
         String var2 = null;
         ArrayList var3 = new ArrayList();
 
-        ColumnVo var6;
+        ColumnVo columnVo;
         try {
-            Class.forName(org.jeecg.codegenerate.config.AppConfig.DRIVER_NAME);
-            CONNECTION = DriverManager.getConnection(org.jeecg.codegenerate.config.AppConfig.URL, org.jeecg.codegenerate.config.AppConfig.USERNAME, org.jeecg.codegenerate.config.AppConfig.PASSWORD);
-            STATEMENT = CONNECTION.createStatement(1005, 1007);
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("mysql")) {
-                var2 = MessageFormat.format("select column_name,data_type,column_comment,numeric_precision,numeric_scale,character_maximum_length,is_nullable nullable from information_schema.columns where table_name = {0} and table_schema = {1}", StrUtil.wrapWithSingleQuote(var0.toUpperCase()), StrUtil.wrapWithSingleQuote(AppConfig.DATABASE_NAME));
+            Class.forName(AppConfig.DRIVER_NAME);
+            CONNECTION = DriverManager.getConnection(AppConfig.URL, AppConfig.USERNAME, AppConfig.PASSWORD);
+            STATEMENT = CONNECTION.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            if (AppConfig.DB_TYPE.equals("mysql")) {
+                var2 = MessageFormat.format("select column_name,data_type,column_comment,numeric_precision,numeric_scale,character_maximum_length,is_nullable nullable from information_schema.columns where table_name = {0} and table_schema = {1}", StrUtil.wrapWithSingleQuote(tableName.toUpperCase()), StrUtil.wrapWithSingleQuote(AppConfig.DATABASE_NAME));
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("oracle")) {
-                var2 = MessageFormat.format(" select colstable.column_name column_name, colstable.data_type data_type, commentstable.comments column_comment, colstable.Data_Precision column_precision, colstable.Data_Scale column_scale,colstable.Char_Length,colstable.nullable from user_tab_cols colstable  inner join user_col_comments commentstable  on colstable.column_name = commentstable.column_name  where colstable.table_name = commentstable.table_name  and colstable.table_name = {0}", StrUtil.wrapWithSingleQuote(var0.toUpperCase()));
+            if (AppConfig.DB_TYPE.equals("oracle")) {
+                var2 = MessageFormat.format(" select colstable.column_name column_name, colstable.data_type data_type, commentstable.comments column_comment, colstable.Data_Precision column_precision, colstable.Data_Scale column_scale,colstable.Char_Length,colstable.nullable from user_tab_cols colstable  inner join user_col_comments commentstable  on colstable.column_name = commentstable.column_name  where colstable.table_name = commentstable.table_name  and colstable.table_name = {0}", StrUtil.wrapWithSingleQuote(tableName.toUpperCase()));
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("postgresql")) {
-                var2 = MessageFormat.format("SELECT a.attname AS  field,t.typname AS type,col_description(a.attrelid,a.attnum) as comment,null as column_precision,null as column_scale,null as Char_Length,a.attnotnull  FROM pg_class c,pg_attribute  a,pg_type t  WHERE c.relname = {0} and a.attnum > 0  and a.attrelid = c.oid and a.atttypid = t.oid  ORDER BY a.attnum ", StrUtil.wrapWithSingleQuote(var0.toLowerCase()));
+            if (AppConfig.DB_TYPE.equals("postgresql")) {
+                var2 = MessageFormat.format("SELECT a.attname AS  field,t.typname AS type,col_description(a.attrelid,a.attnum) as comment,null as column_precision,null as column_scale,null as Char_Length,a.attnotnull  FROM pg_class c,pg_attribute  a,pg_type t  WHERE c.relname = {0} and a.attnum > 0  and a.attrelid = c.oid and a.atttypid = t.oid  ORDER BY a.attnum ", StrUtil.wrapWithSingleQuote(tableName.toLowerCase()));
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("sqlserver")) {
-                var2 = MessageFormat.format("select distinct cast(a.name as varchar(50)) column_name,  cast(b.name as varchar(50)) data_type,  cast(e.value as varchar(200)) comment,  cast(ColumnProperty(a.object_id,a.Name,'''Precision''') as int) num_precision,  cast(ColumnProperty(a.object_id,a.Name,'''Scale''') as int) num_scale,  a.max_length,  (case when a.is_nullable=1 then '''y''' else '''n''' end) nullable,column_id   from sys.columns a left join sys.types b on a.user_type_id=b.user_type_id left join (select top 1 * from sys.objects where type = '''U''' and name ={0}  order by name) c on a.object_id=c.object_id left join sys.extended_properties e on e.major_id=c.object_id and e.minor_id=a.column_id and e.class=1 where c.name={0} order by a.column_id", StrUtil.wrapWithSingleQuote(var0.toLowerCase()));
+            if (AppConfig.DB_TYPE.equals("sqlserver")) {
+                var2 = MessageFormat.format("select distinct cast(a.name as varchar(50)) column_name,  cast(b.name as varchar(50)) data_type,  cast(e.value as varchar(200)) comment,  cast(ColumnProperty(a.object_id,a.Name,'''Precision''') as int) num_precision,  cast(ColumnProperty(a.object_id,a.Name,'''Scale''') as int) num_scale,  a.max_length,  (case when a.is_nullable=1 then '''y''' else '''n''' end) nullable,column_id   from sys.columns a left join sys.types b on a.user_type_id=b.user_type_id left join (select top 1 * from sys.objects where type = '''U''' and name ={0}  order by name) c on a.object_id=c.object_id left join sys.extended_properties e on e.major_id=c.object_id and e.minor_id=a.column_id and e.class=1 where c.name={0} order by a.column_id", StrUtil.wrapWithSingleQuote(tableName.toLowerCase()));
             }
 
             var1 = STATEMENT.executeQuery(var2);
@@ -258,24 +255,24 @@ public class DbReadTableUtil {
                 throw new Exception("该表不存在或者表中没有字段");
             }
 
-            var6 = new ColumnVo();
-            if (org.jeecg.codegenerate.config.AppConfig.l) {
-                var6.setFieldName(e(var1.getString(1).toLowerCase()));
+            columnVo = new ColumnVo();
+            if (AppConfig.l) {
+                columnVo.setFieldName(e(var1.getString(1).toLowerCase()));
             } else {
-                var6.setFieldName(var1.getString(1).toLowerCase());
+                columnVo.setFieldName(var1.getString(1).toLowerCase());
             }
 
-            var6.setFieldDbName(var1.getString(1).toUpperCase());
-            var6.setPrecision(StrUtil.normalizeBlankStr(var1.getString(4)));
-            var6.setScale(StrUtil.normalizeBlankStr(var1.getString(5)));
-            var6.setCharmaxLength(StrUtil.normalizeBlankStr(var1.getString(6)));
-            var6.setNullable(StrUtil.normalizeBoolFlag(var1.getString(7)));
-            var6.setFieldType(a(var1.getString(2).toLowerCase(), var6.getPrecision(), var6.getScale()));
-            var6.setFieldDbType(e(var1.getString(2).toLowerCase()));
-            a(var6);
-            var6.setFiledComment(StringUtils.isBlank(var1.getString(3)) ? var6.getFieldName() : var1.getString(3));
-            LOGGER.debug("columnt.getFieldName() -------------" + var6.getFieldName());
-            var3.add(var6);
+            columnVo.setFieldDbName(var1.getString(1).toUpperCase());
+            columnVo.setPrecision(StrUtil.normalizeBlankStr(var1.getString(4)));
+            columnVo.setScale(StrUtil.normalizeBlankStr(var1.getString(5)));
+            columnVo.setCharmaxLength(StrUtil.normalizeBlankStr(var1.getString(6)));
+            columnVo.setNullable(StrUtil.normalizeBoolFlag(var1.getString(7)));
+            columnVo.setFieldType(jdbcTypeToJavaType(var1.getString(2).toLowerCase(), columnVo.getPrecision(), columnVo.getScale()));
+            columnVo.setFieldDbType(e(var1.getString(2).toLowerCase()));
+            setClassTypeAndOptionType(columnVo);
+            columnVo.setFiledComment(StringUtils.isBlank(var1.getString(3)) ? columnVo.getFieldName() : var1.getString(3));
+            LOGGER.debug("columnt.getFieldName() -------------" + columnVo.getFieldName());
+            var3.add(columnVo);
 
             while(true) {
                 if (!var1.previous()) {
@@ -284,7 +281,7 @@ public class DbReadTableUtil {
                 }
 
                 ColumnVo var7 = new ColumnVo();
-                if (org.jeecg.codegenerate.config.AppConfig.l) {
+                if (AppConfig.l) {
                     var7.setFieldName(e(var1.getString(1).toLowerCase()));
                 } else {
                     var7.setFieldName(var1.getString(1).toLowerCase());
@@ -295,9 +292,9 @@ public class DbReadTableUtil {
                 var7.setScale(StrUtil.normalizeBlankStr(var1.getString(5)));
                 var7.setCharmaxLength(StrUtil.normalizeBlankStr(var1.getString(6)));
                 var7.setNullable(StrUtil.normalizeBoolFlag(var1.getString(7)));
-                var7.setFieldType(a(var1.getString(2).toLowerCase(), var7.getPrecision(), var7.getScale()));
+                var7.setFieldType(jdbcTypeToJavaType(var1.getString(2).toLowerCase(), var7.getPrecision(), var7.getScale()));
                 var7.setFieldDbType(e(var1.getString(2).toLowerCase()));
-                a(var7);
+                setClassTypeAndOptionType(var7);
                 var7.setFiledComment(StringUtils.isBlank(var1.getString(3)) ? var7.getFieldName() : var1.getString(3));
                 var3.add(var7);
             }
@@ -327,34 +324,34 @@ public class DbReadTableUtil {
         ArrayList var19 = new ArrayList();
 
         for(int var5 = var3.size() - 1; var5 >= 0; --var5) {
-            var6 = (ColumnVo)var3.get(var5);
-            var19.add(var6);
+            columnVo = (ColumnVo)var3.get(var5);
+            var19.add(columnVo);
         }
 
         return var19;
     }
 
-    public static boolean c(String var0) {
+    public static boolean isExist(String var0) {
         String var2 = null;
 
         try {
-            LOGGER.debug("数据库驱动: " + org.jeecg.codegenerate.config.AppConfig.DRIVER_NAME);
-            Class.forName(org.jeecg.codegenerate.config.AppConfig.DRIVER_NAME);
-            CONNECTION = DriverManager.getConnection(org.jeecg.codegenerate.config.AppConfig.URL, org.jeecg.codegenerate.config.AppConfig.USERNAME, org.jeecg.codegenerate.config.AppConfig.PASSWORD);
-            STATEMENT = CONNECTION.createStatement(1005, 1007);
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("mysql")) {
-                var2 = "select column_name,data_type,column_comment,0,0 from information_schema.columns where table_name = '" + var0.toUpperCase() + "' and table_schema = '" + org.jeecg.codegenerate.config.AppConfig.DATABASE_NAME + "'";
+            LOGGER.debug("数据库驱动: " + AppConfig.DRIVER_NAME);
+            Class.forName(AppConfig.DRIVER_NAME);
+            CONNECTION = DriverManager.getConnection(AppConfig.URL, AppConfig.USERNAME, AppConfig.PASSWORD);
+            STATEMENT = CONNECTION.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            if (AppConfig.DB_TYPE.equals("mysql")) {
+                var2 = "select column_name,data_type,column_comment,0,0 from information_schema.columns where table_name = '" + var0.toUpperCase() + "' and table_schema = '" + AppConfig.DATABASE_NAME + "'";
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("oracle")) {
+            if (AppConfig.DB_TYPE.equals("oracle")) {
                 var2 = "select colstable.column_name column_name, colstable.data_type data_type, commentstable.comments column_comment from user_tab_cols colstable  inner join user_col_comments commentstable  on colstable.column_name = commentstable.column_name  where colstable.table_name = commentstable.table_name  and colstable.table_name = '" + var0.toUpperCase() + "'";
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("postgresql")) {
+            if (AppConfig.DB_TYPE.equals("postgresql")) {
                 var2 = MessageFormat.format("SELECT a.attname AS  field,t.typname AS type,col_description(a.attrelid,a.attnum) as comment,null as column_precision,null as column_scale,null as Char_Length,a.attnotnull  FROM pg_class c,pg_attribute  a,pg_type t  WHERE c.relname = {0} and a.attnum > 0  and a.attrelid = c.oid and a.atttypid = t.oid  ORDER BY a.attnum ", StrUtil.wrapWithSingleQuote(var0.toLowerCase()));
             }
 
-            if (org.jeecg.codegenerate.config.AppConfig.DB_TYPE.equals("sqlserver")) {
+            if (AppConfig.DB_TYPE.equals("sqlserver")) {
                 var2 = MessageFormat.format("select distinct cast(a.name as varchar(50)) column_name,  cast(b.name as varchar(50)) data_type,  cast(e.value as varchar(200)) comment,  cast(ColumnProperty(a.object_id,a.Name,'''Precision''') as int) num_precision,  cast(ColumnProperty(a.object_id,a.Name,'''Scale''') as int) num_scale,  a.max_length,  (case when a.is_nullable=1 then '''y''' else '''n''' end) nullable,column_id   from sys.columns a left join sys.types b on a.user_type_id=b.user_type_id left join (select top 1 * from sys.objects where type = '''U''' and name ={0}  order by name) c on a.object_id=c.object_id left join sys.extended_properties e on e.major_id=c.object_id and e.minor_id=a.column_id and e.class=1 where c.name={0} order by a.column_id", StrUtil.wrapWithSingleQuote(var0.toLowerCase()));
             }
 
@@ -405,69 +402,69 @@ public class DbReadTableUtil {
         return var0;
     }
 
-    private static void a(ColumnVo var0) {
-        String var1 = var0.getFieldType();
-        String var2 = var0.getScale();
-        var0.setClassType("inputxt");
-        if ("N".equals(var0.getNullable())) {
-            var0.setOptionType("*");
+    private static void setClassTypeAndOptionType(ColumnVo columnVo) {
+        String fieldType = columnVo.getFieldType();
+        String scale = columnVo.getScale();
+        columnVo.setClassType("inputxt");
+        if ("N".equals(columnVo.getNullable())) {
+            columnVo.setOptionType("*");
         }
 
-        if (!"datetime".equals(var1) && !var1.contains("time")) {
-            if ("date".equals(var1)) {
-                var0.setClassType("easyui-datebox");
-            } else if (var1.contains("int")) {
-                var0.setOptionType("n");
-            } else if ("number".equals(var1)) {
-                if (StringUtils.isNotBlank(var2) && Integer.parseInt(var2) > 0) {
-                    var0.setOptionType("d");
+        if (!"datetime".equals(fieldType) && !fieldType.contains("time")) {
+            if ("date".equals(fieldType)) {
+                columnVo.setClassType("easyui-datebox");
+            } else if (fieldType.contains("int")) {
+                columnVo.setOptionType("n");
+            } else if ("number".equals(fieldType)) {
+                if (StringUtils.isNotBlank(scale) && Integer.parseInt(scale) > 0) {
+                    columnVo.setOptionType("d");
                 }
-            } else if (!"float".equals(var1) && !"double".equals(var1) && !"decimal".equals(var1)) {
-                if ("numeric".equals(var1)) {
-                    var0.setOptionType("d");
+            } else if (!"float".equals(fieldType) && !"double".equals(fieldType) && !"decimal".equals(fieldType)) {
+                if ("numeric".equals(fieldType)) {
+                    columnVo.setOptionType("d");
                 }
             } else {
-                var0.setOptionType("d");
+                columnVo.setOptionType("d");
             }
         } else {
-            var0.setClassType("easyui-datetimebox");
+            columnVo.setClassType("easyui-datetimebox");
         }
 
     }
 
-    private static String a(String var0, String var1, String var2) {
-        if (var0.contains("char")) {
-            var0 = "java.lang.String";
-        } else if (var0.contains("int")) {
-            var0 = "java.lang.Integer";
-        } else if (var0.contains("float")) {
-            var0 = "java.lang.Float";
-        } else if (var0.contains("double")) {
-            var0 = "java.lang.Double";
-        } else if (var0.contains("number")) {
-            if (StringUtils.isNotBlank(var2) && Integer.parseInt(var2) > 0) {
-                var0 = "java.math.BigDecimal";
-            } else if (StringUtils.isNotBlank(var1) && Integer.parseInt(var1) > 10) {
-                var0 = "java.lang.Long";
+    private static String jdbcTypeToJavaType(String jdbcType, String precision, String scale) {
+        if (jdbcType.contains("char")) {
+            jdbcType = "java.lang.String";
+        } else if (jdbcType.contains("int")) {
+            jdbcType = "java.lang.Integer";
+        } else if (jdbcType.contains("float")) {
+            jdbcType = "java.lang.Float";
+        } else if (jdbcType.contains("double")) {
+            jdbcType = "java.lang.Double";
+        } else if (jdbcType.contains("number")) {
+            if (StringUtils.isNotBlank(scale) && Integer.parseInt(scale) > 0) {
+                jdbcType = "java.math.BigDecimal";
+            } else if (StringUtils.isNotBlank(precision) && Integer.parseInt(precision) > 10) {
+                jdbcType = "java.lang.Long";
             } else {
-                var0 = "java.lang.Integer";
+                jdbcType = "java.lang.Integer";
             }
-        } else if (var0.contains("decimal")) {
-            var0 = "java.math.BigDecimal";
-        } else if (var0.contains("date")) {
-            var0 = "java.util.Date";
-        } else if (var0.contains("time")) {
-            var0 = "java.util.Date";
-        } else if (var0.contains("blob")) {
-            var0 = "byte[]";
-        } else if (var0.contains("clob")) {
-            var0 = "java.sql.Clob";
-        } else if (var0.contains("numeric")) {
-            var0 = "java.math.BigDecimal";
+        } else if (jdbcType.contains("decimal")) {
+            jdbcType = "java.math.BigDecimal";
+        } else if (jdbcType.contains("date")) {
+            jdbcType = "java.util.Date";
+        } else if (jdbcType.contains("time")) {
+            jdbcType = "java.util.Date";
+        } else if (jdbcType.contains("blob")) {
+            jdbcType = "byte[]";
+        } else if (jdbcType.contains("clob")) {
+            jdbcType = "java.sql.Clob";
+        } else if (jdbcType.contains("numeric")) {
+            jdbcType = "java.math.BigDecimal";
         } else {
-            var0 = "java.lang.Object";
+            jdbcType = "java.lang.Object";
         }
 
-        return var0;
+        return jdbcType;
     }
 }

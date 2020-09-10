@@ -107,7 +107,7 @@ public class CodeWindow extends JFrame {
                                 }
 
                                 try {
-                                    boolean var2 = DbReadTableUtil.c(CodeWindow.e);
+                                    boolean var2 = DbReadTableUtil.isExist(CodeWindow.e);
                                     if (var2) {
                                         TableVo var3x = new TableVo();
                                         var3x.setTableName(CodeWindow.e);

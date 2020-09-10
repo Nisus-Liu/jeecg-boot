@@ -54,12 +54,12 @@ public class CodeGenerateOne extends a implements IGenerate {
 
         try {
             if (this.columns == null || this.columns.size() == 0) {
-                this.columns = DbReadTableUtil.a(this.tableVo.getTableName());
+                this.columns = DbReadTableUtil.getColumns(this.tableVo.getTableName());
             }
 
             var1.put("columns", this.columns);
             if (this.originalColumns == null || this.originalColumns.size() == 0) {
-                this.originalColumns = DbReadTableUtil.b(this.tableVo.getTableName());
+                this.originalColumns = DbReadTableUtil.getOriginalColumns(this.tableVo.getTableName());
             }
 
             var1.put("originalColumns", this.originalColumns);
