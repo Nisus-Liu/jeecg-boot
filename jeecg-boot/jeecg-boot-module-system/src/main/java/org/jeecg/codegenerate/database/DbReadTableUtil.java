@@ -435,6 +435,14 @@ public class DbReadTableUtil {
     private static String jdbcTypeToJavaType(String jdbcType, String precision, String scale) {
         if (jdbcType.contains("char")) {
             jdbcType = "java.lang.String";
+        } else if(jdbcType.contains(JDBCType.TINYINT.getName().toLowerCase())) {
+            if (AppConfig.TINYINT_TO_BOOLEAN) {
+                jdbcType = "java.lang.Boolean";
+            }else {
+                jdbcType = "java.lang.Integer";
+            }
+        } else if(jdbcType.contains(JDBCType.BIGINT.getName().toLowerCase())) {
+            jdbcType = "java.lang.Long";
         } else if (jdbcType.contains("int")) {
             jdbcType = "java.lang.Integer";
         } else if (jdbcType.contains("float")) {

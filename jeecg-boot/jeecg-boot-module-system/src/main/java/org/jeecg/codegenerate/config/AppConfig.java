@@ -1,5 +1,6 @@
 package org.jeecg.codegenerate.config;
 
+import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ public class AppConfig {
 
     private static final ResourceBundle JEECG_DATABASE_BUNDLE = ResourceBundle.getBundle("jeecg/jeecg_database");
     private static final ResourceBundle JEECG_CONFIG_BUNDLE = ResourceBundle.getBundle("jeecg/jeecg_config");
-    public static String DB_TYPE = "mysql"; // df: 数据类型
+    public static String DB_TYPE = "mysql"; // df: 数据库类型
     public static String DRIVER_NAME = "com.mysql.jdbc.Driver";
     public static String URL = "jdbc:mysql://localhost:3306/jeecg-boot?useUnicode=true&characterEncoding=UTF-8";
     public static String USERNAME = "root";
@@ -32,6 +33,7 @@ public class AppConfig {
     public static String o = "3";
     public static String p;
     public static String q = "1";
+    public static boolean TINYINT_TO_BOOLEAN = true;
 
     public AppConfig() {
     }
@@ -122,6 +124,18 @@ public class AppConfig {
         k = var0;
     }
 
+    // Add by df
+    public static boolean getBool(String key) {
+        String val = JEECG_CONFIG_BUNDLE.getString(key);
+
+        // 空值认为是 false , 'false' == false, 其他都是 true
+        if (StrUtil.isBlank(val)) {
+            return false;
+        }
+
+        return !"false".equals(val); // 除了 false , 其他非空字符都是认为true
+    }
+
     static {
         DRIVER_NAME = getDriverName();
         URL = getUrl();
@@ -155,5 +169,8 @@ public class AppConfig {
 
         i = i.replace(".", "/");
         j = j.replace(".", "/");
+
+        // df 加的配置
+        TINYINT_TO_BOOLEAN = getBool("tinyint_to_boolean");
     }
 }
