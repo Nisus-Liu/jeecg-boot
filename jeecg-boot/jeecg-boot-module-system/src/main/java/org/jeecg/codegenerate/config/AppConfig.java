@@ -27,7 +27,7 @@ public class AppConfig {
     public static String i = "src";
     public static String j = "WebRoot";
     public static String k = "template/code-template/";
-    public static boolean l = true;
+    public static boolean DB_FIELD_CONVERT = true;
     public static String m;
     public static String n = "4";
     public static String o = "3";
@@ -148,7 +148,8 @@ public class AppConfig {
         k = p();
         g = m();
         m = i();
-        l = f();
+        // l = f();
+        DB_FIELD_CONVERT = getBool("db_filed_convert");
         p = j();
         o = k();
         if (URL.indexOf("mysql") < 0 && URL.indexOf("MYSQL") < 0) {

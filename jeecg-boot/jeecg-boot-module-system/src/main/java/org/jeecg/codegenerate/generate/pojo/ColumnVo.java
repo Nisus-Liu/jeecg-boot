@@ -1,5 +1,10 @@
 package org.jeecg.codegenerate.generate.pojo;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class ColumnVo extends CgFormColumnExtendVo {
     public static final String OPTION_REQUIRED = "required:true";
     public static final String OPTION_NUMBER_INSEX = "precision:2,groupSeparator:','";
@@ -15,6 +20,8 @@ public class ColumnVo extends CgFormColumnExtendVo {
     private String classType = "";
     private String classType_row = "";
     private String optionType = "";
+    // 是否和sql关键字冲突
+    private boolean isKeyword = false;
 
     public ColumnVo() {
     }
@@ -115,7 +122,7 @@ public class ColumnVo extends CgFormColumnExtendVo {
         this.fieldDbName = fieldDbName;
     }
 
-    public String toString() {
-        return "{\"fieldDbName\":\"" + this.fieldDbName + "\",\"fieldName\":\"" + this.fieldName + "\",\"filedComment\":\"" + this.filedComment + "\",\"fieldType\":\"" + this.fieldType + "\",\"fieldDbType\":\"" + this.fieldDbType + "\",\"classType\":\"" + this.classType + "\",\"classType_row\":\"" + this.classType_row + "\",\"optionType\":\"" + this.optionType + "\",\"charmaxLength\":\"" + this.charmaxLength + "\",\"precision\":\"" + this.precision + "\",\"scale\":\"" + this.scale + "\",\"nullable\":\"" + this.nullable + "\",\"fieldLength\":\"" + this.fieldLength + "\",\"fieldHref\":\"" + this.fieldHref + "\",\"fieldValidType\":\"" + this.fieldValidType + "\",\"fieldDefault\":\"" + this.fieldDefault + "\",\"fieldShowType\":\"" + this.fieldShowType + "\",\"fieldOrderNum\":\"" + this.fieldOrderNum + "\",\"isKey\":\"" + this.isKey + "\",\"isShow\":\"" + this.isShow + "\",\"isShowList\":\"" + this.isShowList + "\",\"isQuery\":\"" + this.isQuery + "\",\"queryMode\":\"" + this.queryMode + "\",\"dictField\":\"" + this.dictField + "\",\"dictTable\":\"" + this.dictTable + "\",\"dictText\":\"" + this.dictText + "\"}";
-    }
+    // public String toString() {
+    //     return "{\"fieldDbName\":\"" + this.fieldDbName + "\",\"fieldName\":\"" + this.fieldName + "\",\"filedComment\":\"" + this.filedComment + "\",\"fieldType\":\"" + this.fieldType + "\",\"fieldDbType\":\"" + this.fieldDbType + "\",\"classType\":\"" + this.classType + "\",\"classType_row\":\"" + this.classType_row + "\",\"optionType\":\"" + this.optionType + "\",\"charmaxLength\":\"" + this.charmaxLength + "\",\"precision\":\"" + this.precision + "\",\"scale\":\"" + this.scale + "\",\"nullable\":\"" + this.nullable + "\",\"fieldLength\":\"" + this.fieldLength + "\",\"fieldHref\":\"" + this.fieldHref + "\",\"fieldValidType\":\"" + this.fieldValidType + "\",\"fieldDefault\":\"" + this.fieldDefault + "\",\"fieldShowType\":\"" + this.fieldShowType + "\",\"fieldOrderNum\":\"" + this.fieldOrderNum + "\",\"isKey\":\"" + this.isKey + "\",\"isShow\":\"" + this.isShow + "\",\"isShowList\":\"" + this.isShowList + "\",\"isQuery\":\"" + this.isQuery + "\",\"queryMode\":\"" + this.queryMode + "\",\"dictField\":\"" + this.dictField + "\",\"dictTable\":\"" + this.dictTable + "\",\"dictText\":\"" + this.dictText + "\"}";
+    // }
 }

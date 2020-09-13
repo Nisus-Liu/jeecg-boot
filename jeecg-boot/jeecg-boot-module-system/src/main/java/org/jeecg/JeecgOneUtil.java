@@ -19,28 +19,6 @@ import java.text.MessageFormat;
  */
 public class JeecgOneUtil {
 
-    /*
-     * 查询表注释
-     * SELECT TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES  WHERE TABLE_NAME = '表名' AND TABLE_SCHEMA = '库名'
-     * */
-
-    public static String getTableComment(String tableName) {
-        Statement statement = DbReadTableUtil.getStatement();
-        String sql = MessageFormat.format("SELECT TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES  WHERE TABLE_NAME = {0} AND TABLE_SCHEMA = {1}", StrUtil.wrapWithSingleQuote(tableName), StrUtil.wrapWithSingleQuote(AppConfig.DATABASE_NAME));
-        ResultSet rs = null;
-        String desc = "";
-        try {
-            rs = statement.executeQuery(sql);
-
-            if (rs.next()) {
-                desc = rs.getString(1);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return desc;
-    }
-
 
     public static void main(String[] args) {
         // =================================================================
@@ -77,6 +55,28 @@ public class JeecgOneUtil {
         }
 
         System.out.println("----jeecg--------- Code------------- Generation -----[单表模型]------- 生成完成。。。");
+    }
+
+
+    /**
+     * 查询表注释
+     * SELECT TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES  WHERE TABLE_NAME = '表名' AND TABLE_SCHEMA = '库名'
+     */
+    public static String getTableComment(String tableName) {
+        Statement statement = DbReadTableUtil.getStatement();
+        String sql = MessageFormat.format("SELECT TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES  WHERE TABLE_NAME = {0} AND TABLE_SCHEMA = {1}", StrUtil.wrapWithSingleQuote(tableName), StrUtil.wrapWithSingleQuote(AppConfig.DATABASE_NAME));
+        ResultSet rs = null;
+        String desc = "";
+        try {
+            rs = statement.executeQuery(sql);
+
+            if (rs.next()) {
+                desc = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return desc;
     }
 
 }

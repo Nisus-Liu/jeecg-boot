@@ -108,9 +108,9 @@ public class DbReadTableUtil {
 
     public static List<ColumnVo> getColumns(String var0) throws Exception {
         String var2 = null;
-        ArrayList var3 = new ArrayList();
+        ArrayList<ColumnVo> var3 = new ArrayList();
 
-        ColumnVo var6;
+        ColumnVo columnVo;
         try {
             Class.forName(AppConfig.DRIVER_NAME);
             CONNECTION = DriverManager.getConnection(AppConfig.URL, AppConfig.USERNAME, AppConfig.PASSWORD);
@@ -138,36 +138,36 @@ public class DbReadTableUtil {
                 throw new Exception("该表不存在或者表中没有字段");
             }
 
-            var6 = new ColumnVo();
-            if (AppConfig.l) {
-                var6.setFieldName(e(var1.getString(1).toLowerCase()));
+            columnVo = new ColumnVo();
+            if (AppConfig.DB_FIELD_CONVERT) {
+                columnVo.setFieldName(convertDbFieldName(var1.getString(1).toLowerCase()));
             } else {
-                var6.setFieldName(var1.getString(1).toLowerCase());
+                columnVo.setFieldName(var1.getString(1).toLowerCase());
             }
 
-            var6.setFieldDbName(var1.getString(1).toUpperCase());
-            var6.setFieldType(e(var1.getString(2).toLowerCase()));
-            var6.setFieldDbType(e(var1.getString(2).toLowerCase()));
-            var6.setPrecision(var1.getString(4));
-            var6.setScale(var1.getString(5));
-            var6.setCharmaxLength(var1.getString(6));
-            var6.setNullable(StrUtil.normalizeBoolFlag(var1.getString(7)));
-            setClassTypeAndOptionType(var6);
-            var6.setFiledComment(StringUtils.isBlank(var1.getString(3)) ? var6.getFieldName() : var1.getString(3));
-            LOGGER.debug("columnt.getFieldName() -------------" + var6.getFieldName());
+            columnVo.setFieldDbName(var1.getString(1).toUpperCase());
+            columnVo.setFieldType(convertDbFieldName(var1.getString(2).toLowerCase()));
+            columnVo.setFieldDbType(convertDbFieldName(var1.getString(2).toLowerCase()));
+            columnVo.setPrecision(var1.getString(4));
+            columnVo.setScale(var1.getString(5));
+            columnVo.setCharmaxLength(var1.getString(6));
+            columnVo.setNullable(StrUtil.normalizeBoolFlag(var1.getString(7)));
+            setClassTypeAndOptionType(columnVo);
+            columnVo.setFiledComment(StringUtils.isBlank(var1.getString(3)) ? columnVo.getFieldName() : var1.getString(3));
+            LOGGER.debug("column.getFieldName() -------------" + columnVo.getFieldName());
             String[] var7 = new String[0];
             if (AppConfig.p != null) {
                 var7 = AppConfig.p.toLowerCase().split(",");
             }
 
-            if (!AppConfig.m.equals(var6.getFieldName()) && !org.jeecg.codegenerate.database.util.a.a(var6.getFieldDbName().toLowerCase(), var7)) {
-                var3.add(var6);
+            if (!AppConfig.m.equals(columnVo.getFieldName()) && !org.jeecg.codegenerate.database.util.a.a(columnVo.getFieldDbName().toLowerCase(), var7)) {
+                var3.add(columnVo);
             }
 
             while(var1.previous()) {
                 ColumnVo var8 = new ColumnVo();
-                if (AppConfig.l) {
-                    var8.setFieldName(e(var1.getString(1).toLowerCase()));
+                if (AppConfig.DB_FIELD_CONVERT) {
+                    var8.setFieldName(convertDbFieldName(var1.getString(1).toLowerCase()));
                 } else {
                     var8.setFieldName(var1.getString(1).toLowerCase());
                 }
@@ -175,8 +175,8 @@ public class DbReadTableUtil {
                 var8.setFieldDbName(var1.getString(1).toUpperCase());
                 LOGGER.debug("columnt.getFieldName() -------------" + var8.getFieldName());
                 if (!AppConfig.m.equals(var8.getFieldName()) && !org.jeecg.codegenerate.database.util.a.a(var8.getFieldDbName().toLowerCase(), var7)) {
-                    var8.setFieldType(e(var1.getString(2).toLowerCase()));
-                    var8.setFieldDbType(e(var1.getString(2).toLowerCase()));
+                    var8.setFieldType(convertDbFieldName(var1.getString(2).toLowerCase()));
+                    var8.setFieldDbType(convertDbFieldName(var1.getString(2).toLowerCase()));
                     LOGGER.debug("-----po.setFieldType------------" + var8.getFieldType());
                     var8.setPrecision(var1.getString(4));
                     var8.setScale(var1.getString(5));
@@ -215,8 +215,8 @@ public class DbReadTableUtil {
         ArrayList var20 = new ArrayList();
 
         for(int var5 = var3.size() - 1; var5 >= 0; --var5) {
-            var6 = (ColumnVo)var3.get(var5);
-            var20.add(var6);
+            columnVo = (ColumnVo)var3.get(var5);
+            var20.add(columnVo);
         }
 
         return var20;
@@ -225,7 +225,7 @@ public class DbReadTableUtil {
     public static List<ColumnVo> getOriginalColumns(String tableName) throws Exception {
         ResultSet var1 = null;
         String var2 = null;
-        ArrayList var3 = new ArrayList();
+        ArrayList<ColumnVo> var3 = new ArrayList();
 
         ColumnVo columnVo;
         try {
@@ -256,8 +256,8 @@ public class DbReadTableUtil {
             }
 
             columnVo = new ColumnVo();
-            if (AppConfig.l) {
-                columnVo.setFieldName(e(var1.getString(1).toLowerCase()));
+            if (AppConfig.DB_FIELD_CONVERT) {
+                columnVo.setFieldName(convertDbFieldName(var1.getString(1).toLowerCase()));
             } else {
                 columnVo.setFieldName(var1.getString(1).toLowerCase());
             }
@@ -268,8 +268,12 @@ public class DbReadTableUtil {
             columnVo.setCharmaxLength(StrUtil.normalizeBlankStr(var1.getString(6)));
             columnVo.setNullable(StrUtil.normalizeBoolFlag(var1.getString(7)));
             columnVo.setFieldType(jdbcTypeToJavaType(var1.getString(2).toLowerCase(), columnVo.getPrecision(), columnVo.getScale()));
-            columnVo.setFieldDbType(e(var1.getString(2).toLowerCase()));
+            columnVo.setFieldDbType(convertDbFieldName(var1.getString(2).toLowerCase()));
             setClassTypeAndOptionType(columnVo);
+
+            // add by df 2020-9-13  判断是否和DB关键字冲突
+            columnVo.setKeyword(DbKeywords.isKeyword(columnVo.getFieldName()));
+
             columnVo.setFiledComment(StringUtils.isBlank(var1.getString(3)) ? columnVo.getFieldName() : var1.getString(3));
             LOGGER.debug("columnt.getFieldName() -------------" + columnVo.getFieldName());
             var3.add(columnVo);
@@ -281,8 +285,8 @@ public class DbReadTableUtil {
                 }
 
                 ColumnVo var7 = new ColumnVo();
-                if (AppConfig.l) {
-                    var7.setFieldName(e(var1.getString(1).toLowerCase()));
+                if (AppConfig.DB_FIELD_CONVERT) {
+                    var7.setFieldName(convertDbFieldName(var1.getString(1).toLowerCase()));
                 } else {
                     var7.setFieldName(var1.getString(1).toLowerCase());
                 }
@@ -293,8 +297,10 @@ public class DbReadTableUtil {
                 var7.setCharmaxLength(StrUtil.normalizeBlankStr(var1.getString(6)));
                 var7.setNullable(StrUtil.normalizeBoolFlag(var1.getString(7)));
                 var7.setFieldType(jdbcTypeToJavaType(var1.getString(2).toLowerCase(), var7.getPrecision(), var7.getScale()));
-                var7.setFieldDbType(e(var1.getString(2).toLowerCase()));
+                var7.setFieldDbType(convertDbFieldName(var1.getString(2).toLowerCase()));
                 setClassTypeAndOptionType(var7);
+                // add by df 2020-9-13  判断是否和DB关键字冲突
+                var7.setKeyword(DbKeywords.isKeyword(var7.getFieldName()));
                 var7.setFiledComment(StringUtils.isBlank(var1.getString(3)) ? var7.getFieldName() : var1.getString(3));
                 var3.add(var7);
             }
@@ -365,7 +371,7 @@ public class DbReadTableUtil {
         }
     }
 
-    private static String e(String var0) {
+    private static String convertDbFieldName(String var0) {
         String[] var1 = var0.split("_");
         var0 = "";
         int var2 = 0;
