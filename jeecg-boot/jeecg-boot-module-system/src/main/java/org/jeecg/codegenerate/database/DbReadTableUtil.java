@@ -106,7 +106,7 @@ public class DbReadTableUtil {
         return var2;
     }
 
-    public static List<ColumnVo> getColumns(String var0) throws Exception {
+    public static List<ColumnVo> getColumns(String tableName) throws Exception {
         String var2 = null;
         ArrayList<ColumnVo> var3 = new ArrayList();
 
@@ -116,26 +116,26 @@ public class DbReadTableUtil {
             CONNECTION = DriverManager.getConnection(AppConfig.URL, AppConfig.USERNAME, AppConfig.PASSWORD);
             STATEMENT = CONNECTION.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
             if (AppConfig.DB_TYPE.equals("mysql")) {
-                var2 = MessageFormat.format("select column_name,data_type,column_comment,numeric_precision,numeric_scale,character_maximum_length,is_nullable nullable from information_schema.columns where table_name = {0} and table_schema = {1}", StrUtil.wrapWithSingleQuote(var0.toUpperCase()), StrUtil.wrapWithSingleQuote(AppConfig.DATABASE_NAME));
+                var2 = MessageFormat.format("select column_name,data_type,column_comment,numeric_precision,numeric_scale,character_maximum_length,is_nullable nullable from information_schema.columns where table_name = {0} and table_schema = {1}", StrUtil.wrapWithSingleQuote(tableName.toUpperCase()), StrUtil.wrapWithSingleQuote(AppConfig.DATABASE_NAME));
             }
 
             if (AppConfig.DB_TYPE.equals("oracle")) {
-                var2 = MessageFormat.format(" select colstable.column_name column_name, colstable.data_type data_type, commentstable.comments column_comment, colstable.Data_Precision column_precision, colstable.Data_Scale column_scale,colstable.Char_Length,colstable.nullable from user_tab_cols colstable  inner join user_col_comments commentstable  on colstable.column_name = commentstable.column_name  where colstable.table_name = commentstable.table_name  and colstable.table_name = {0}", StrUtil.wrapWithSingleQuote(var0.toUpperCase()));
+                var2 = MessageFormat.format(" select colstable.column_name column_name, colstable.data_type data_type, commentstable.comments column_comment, colstable.Data_Precision column_precision, colstable.Data_Scale column_scale,colstable.Char_Length,colstable.nullable from user_tab_cols colstable  inner join user_col_comments commentstable  on colstable.column_name = commentstable.column_name  where colstable.table_name = commentstable.table_name  and colstable.table_name = {0}", StrUtil.wrapWithSingleQuote(tableName.toUpperCase()));
             }
 
             if (AppConfig.DB_TYPE.equals("postgresql")) {
-                var2 = MessageFormat.format("SELECT a.attname AS  field,t.typname AS type,col_description(a.attrelid,a.attnum) as comment,null as column_precision,null as column_scale,null as Char_Length,a.attnotnull  FROM pg_class c,pg_attribute  a,pg_type t  WHERE c.relname = {0} and a.attnum > 0  and a.attrelid = c.oid and a.atttypid = t.oid  ORDER BY a.attnum ", StrUtil.wrapWithSingleQuote(var0.toLowerCase()));
+                var2 = MessageFormat.format("SELECT a.attname AS  field,t.typname AS type,col_description(a.attrelid,a.attnum) as comment,null as column_precision,null as column_scale,null as Char_Length,a.attnotnull  FROM pg_class c,pg_attribute  a,pg_type t  WHERE c.relname = {0} and a.attnum > 0  and a.attrelid = c.oid and a.atttypid = t.oid  ORDER BY a.attnum ", StrUtil.wrapWithSingleQuote(tableName.toLowerCase()));
             }
 
             if (AppConfig.DB_TYPE.equals("sqlserver")) {
-                var2 = MessageFormat.format("select distinct cast(a.name as varchar(50)) column_name,  cast(b.name as varchar(50)) data_type,  cast(e.value as varchar(200)) comment,  cast(ColumnProperty(a.object_id,a.Name,'''Precision''') as int) num_precision,  cast(ColumnProperty(a.object_id,a.Name,'''Scale''') as int) num_scale,  a.max_length,  (case when a.is_nullable=1 then '''y''' else '''n''' end) nullable,column_id   from sys.columns a left join sys.types b on a.user_type_id=b.user_type_id left join (select top 1 * from sys.objects where type = '''U''' and name ={0}  order by name) c on a.object_id=c.object_id left join sys.extended_properties e on e.major_id=c.object_id and e.minor_id=a.column_id and e.class=1 where c.name={0} order by a.column_id", StrUtil.wrapWithSingleQuote(var0.toLowerCase()));
+                var2 = MessageFormat.format("select distinct cast(a.name as varchar(50)) column_name,  cast(b.name as varchar(50)) data_type,  cast(e.value as varchar(200)) comment,  cast(ColumnProperty(a.object_id,a.Name,'''Precision''') as int) num_precision,  cast(ColumnProperty(a.object_id,a.Name,'''Scale''') as int) num_scale,  a.max_length,  (case when a.is_nullable=1 then '''y''' else '''n''' end) nullable,column_id   from sys.columns a left join sys.types b on a.user_type_id=b.user_type_id left join (select top 1 * from sys.objects where type = '''U''' and name ={0}  order by name) c on a.object_id=c.object_id left join sys.extended_properties e on e.major_id=c.object_id and e.minor_id=a.column_id and e.class=1 where c.name={0} order by a.column_id", StrUtil.wrapWithSingleQuote(tableName.toLowerCase()));
             }
 
             ResultSet var1 = STATEMENT.executeQuery(var2);
             var1.last();
             int var4 = var1.getRow();
             if (var4 <= 0) {
-                throw new Exception("该表不存在或者表中没有字段");
+                throw new Exception("表`"+tableName+"`不存在或者表中没有字段");
             }
 
             columnVo = new ColumnVo();
@@ -439,7 +439,7 @@ public class DbReadTableUtil {
     }
 
     private static String jdbcTypeToJavaType(String jdbcType, String precision, String scale) {
-        if (jdbcType.contains("char")) {
+        if (jdbcType.contains("char") || jdbcType.contains("text")) {
             jdbcType = "java.lang.String";
         } else if(jdbcType.contains(JDBCType.TINYINT.getName().toLowerCase())) {
             if (AppConfig.TINYINT_TO_BOOLEAN) {
