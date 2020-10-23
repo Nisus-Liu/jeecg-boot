@@ -12,7 +12,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
 
-/**
+/**单表代码生成工具类
+ *
+ * 指定模块和若干表名, 批量生成.
  * @author dafei
  * @version 0.1
  * @date 2020/9/7 23:24
@@ -23,9 +25,9 @@ public class JeecgOneUtil {
     public static void main(String[] args) {
         // =================================================================
         // 批量生成多个表格名定义
-        String tableNames[] = {"vrtl_feed_reply"};
+        String tableNames[] = {"sys_log"};
         // 模块名
-        String moduleName = "vrtl";
+        String moduleName = "system";
         // =================================================================
 
 
